@@ -1,0 +1,14 @@
+/* Cooked Garnish - Animation & Styling Polish */
+
+/* Recipe Grid */
+.cooked-recipe-grid.cooked-garnish .cooked-recipe { -webkit-transform:translate3d(0,0,0); -moz-transform:translate3d(0,0,0); transform:translate3d(0,0,0); }
+.cooked-recipe-grid.cooked-garnish .cooked-recipe .cooked-recipe-inside { box-shadow:0 2px 4px rgba(0,0,0,0.07); }
+.cooked-recipe-grid.cooked-garnish .cooked-recipe:hover { -webkit-transform:translate3d(0,-2px,0); -moz-transform:translate3d(0,-2px,0); transform:translate3d(0,-2px,0); }
+.cooked-recipe-grid.cooked-garnish .cooked-recipe:hover .cooked-recipe-inside { box-shadow:0 10px 25px rgba(0,0,0,.15); }
+.cooked-recipe-grid.cooked-garnish .cooked-recipe,
+.cooked-recipe-grid.cooked-garnish .cooked-recipe .cooked-recipe-inside {
+	-webkit-transition: all 200ms cubic-bezier(0.420, 0.000, 0.150, 1.000) !important;
+	-moz-transition: all 200ms cubic-bezier(0.420, 0.000, 0.150, 1.000) !important;
+	-o-transition: all 200ms cubic-bezier(0.420, 0.000, 0.150, 1.000) !important;
+	transition: all 200ms cubic-bezier(0.420, 0.000, 0.150, 1.000) !important;
+}

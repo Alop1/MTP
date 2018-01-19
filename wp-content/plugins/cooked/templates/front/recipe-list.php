@@ -1,0 +1,86 @@
+<?php
+
+global $recipes,$recipe,$_cooked_settings,$recipe_args,$current_recipe_page,$atts,$list_id_counter;
+
+$author_template_override = false;
+$is_author_page = ( !isset($atts['skip_heading']) && !empty($recipes) && isset($recipe_args['author_name']) && $recipe_args['author_name'] || !isset($atts['skip_heading']) && !empty($recipes) && isset($recipe_args['author']) && $recipe_args['author'] ? true : false );
+
+if ( $is_author_page ):
+
+	$first_recipe = current( $recipes );
+	$recipe_id = $first_recipe['id'];
+	$recipe = get_post($recipe_id);
+	$author = Cooked_Users::get( $recipe->post_author );
+
+	// Developers: You can override the author's template page with your own if needed.
+	$author_template_override = apply_filters( 'cooked_author_template_override', false, $author );
+
+endif;
+
+// START 'cooked_author_template_override' Filter:
+if ( $author_template_override ):
+
+	echo $author_template_override;
+
+else:
+
+	if( $is_author_page ):
+
+		echo '<div class="cooked-author-list-heading">';
+			echo ( isset($author['profile_photo']) && $author['profile_photo'] ? '<span class="cooked-author-avatar">' . $author['profile_photo'] . '</span>' : '' );
+			echo '<strong class="cooked-meta-title">' . sprintf( esc_html__('Recipes by %s','cooked'), $author['name'] ) . '</strong>';
+			echo ( isset($_cooked_settings['browse_page']) && $_cooked_settings['browse_page'] ? '<br><a href="' . get_permalink($_cooked_settings['browse_page']) . '">' . esc_html__( 'View all recipes','cooked' ) . '</a>' : '' );
+		echo '</div>';
+
+	elseif ( $atts['search'] === 'true' ):
+
+		$size = ( $atts['compact'] ? ' compact="true"' : false );
+        $hide_browse = ( $atts['hide_browse'] ? ' hide_browse="true"' : false );
+        $hide_sorting = ( $atts['hide_sorting'] ? ' hide_sorting="true"' : false );
+
+        echo do_shortcode( '[cooked-search' . $size . $hide_browse . $hide_sorting . ']' );
+
+	endif;
+
+	if ( !empty($recipes) && !isset( $recipes['raw'] ) && count($recipes) >= 1 || !empty($recipes) && isset( $recipes['raw'] ) && count($recipes) > 1 ):
+
+		$list_id_counter++;
+		$recipe_list_style = apply_filters( 'cooked_recipe_list_style', array( 'grid' => 'Cooked_Recipes' ), $atts['layout'] );
+		$list_style = esc_attr( key( $recipe_list_style ) );
+		$ls_method = 'list_style_' . $list_style;
+		$ls_class = current( $recipe_list_style );
+
+		$masonry_layouts = apply_filters( 'cooked_masonry_layouts', array( 'grid' ) );
+
+		$garnish = ( isset( $_cooked_settings['garnish'][0] ) ? true : false );
+
+		echo '<section id="cooked-recipe-list-' . $list_id_counter . '" class="cooked-recipe-' . $list_style . ( $garnish ? ' cooked-garnish' : '' ) . ' cooked-recipe-loader' . ( in_array( $list_style, $masonry_layouts ) ? ' cooked-masonry' : '' ) . ( isset($atts['columns']) && $atts['columns'] ? ' cooked-columns-' . $atts['columns'] : '' ) . '">';
+
+		foreach( $recipes as $key => $recipe ):
+
+			if ( $key === 'raw' ):
+				continue;
+			endif;
+
+			$ls_class::$ls_method();
+
+		endforeach;
+
+		echo '</section>';
+
+		if ( $atts['pagination'] === 'true' ):
+			echo Cooked_Recipes::pagination( $recipes['raw'], $recipe_args );
+		endif;
+
+		if ( in_array( $list_style, $masonry_layouts ) ): wp_enqueue_script( 'cooked-masonry' ); endif;
+		wp_enqueue_script( 'cooked-imagesLoaded' );
+		wp_enqueue_script( 'cooked-appear-js' );
+
+	else:
+		$post_type_obj = get_post_type_object('cp_recipe');
+		echo '<p class="cooked-none-found">' . $post_type_obj->labels->not_found . '</p>';
+	endif;
+
+endif;
+// END 'cooked_author_template_override' Filter.
+

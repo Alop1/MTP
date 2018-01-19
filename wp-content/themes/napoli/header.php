@@ -33,6 +33,7 @@
 
 					<div id="header-social-icons" class="header-social-icons social-icons-navigation clearfix">
 						<?php
+						get_search_form();
 							wp_nav_menu( array(
 								'theme_location' => 'social',
 								'container' => false,
